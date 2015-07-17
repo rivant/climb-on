@@ -4,6 +4,6 @@ class Route < ActiveRecord::Base
   belongs_to :section
 
   def default_to_top(rate)
-    rating = rate > 10 ? 10 : rate
+    self.rating = rate > 10 ? 10 : rate
   end
 end
