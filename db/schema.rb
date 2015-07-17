@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150625023411) do
+ActiveRecord::Schema.define(version: 20150716060920) do
 
   create_table "locations", force: :cascade do |t|
     t.string   "name"
@@ -24,6 +24,7 @@ ActiveRecord::Schema.define(version: 20150625023411) do
     t.string   "name"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "rating"
   end
 
   create_table "sections", force: :cascade do |t|
