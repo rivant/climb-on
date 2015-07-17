@@ -1,3 +1,6 @@
 AllCops:
   Exclude:
     - db/**/*
+    - bin/rails
+    - bin/rake
+    - bin/spring
