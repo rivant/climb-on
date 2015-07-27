@@ -1,9 +1,13 @@
 # A line on a cliff followed by a climber
 class Route < ActiveRecord::Base
-  validates :name, presence: true
+  validates_presence_of :name, :rating
   belongs_to :section
 
-  def default_to_top(rate)
-    self.rating = rate > 10 ? 10 : rate
+  #before_save :default_rating
+
+  def default_rating
+    if !self.rating.nil?
+      self.rating = 10 if self.rating > 10
+    end
   end
 end
