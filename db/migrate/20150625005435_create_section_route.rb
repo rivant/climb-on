@@ -5,11 +5,5 @@ class CreateSectionRoute < ActiveRecord::Migration
       t.string :name
       t.timestamps
     end
-
-    create_table :routes do |t|
-      t.references :section
-      t.string :name
-      t.timestamps
-    end
   end
 end

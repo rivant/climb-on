@@ -1,5 +1,5 @@
-# Represents a group of many Sections
+# List and location of climbing areas
 class Location < ActiveRecord::Base
-  validates :name, presence: true
+  validates_presence_of :name, :state, :region, :nearest_town
   has_many :sections
 end
