@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150728004155) do
+ActiveRecord::Schema.define(version: 20150805222720) do
 
   create_table "comments", force: :cascade do |t|
     t.integer  "record_id"
@@ -52,7 +52,7 @@ ActiveRecord::Schema.define(version: 20150728004155) do
     t.integer  "section_id"
     t.string   "name"
     t.string   "difficulty"
-    t.string   "type"
+    t.string   "climb_type"
     t.integer  "bolts"
     t.string   "height"
     t.datetime "created_at"

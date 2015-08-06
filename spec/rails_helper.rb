@@ -1,11 +1,12 @@
 # This file is copied to spec/ when you run 'rails generate rspec:install'
 ENV['RAILS_ENV'] ||= 'test'
-require File.expand_path('../../config/environment', __FILE__)
-# Prevent database truncation if the environment is production
-abort('The Rails environment is running in production mode!') if
-  Rails.env.production?
 require 'spec_helper'
+require File.expand_path('../../config/environment', __FILE__)
 require 'rspec/rails'
+require 'shoulda/matchers'
+require 'capybara/rspec'
+require 'database_cleaner'
+
 # Add additional requires below this line. Rails is not loaded until this point!
 
 # Requires supporting ruby files with custom matchers and macros, etc, in
@@ -27,6 +28,12 @@ require 'rspec/rails'
 # If you are not using ActiveRecord, you can remove this line.
 ActiveRecord::Migration.maintain_test_schema!
 
+# Set the Capybara Javascript driver to capybara-webkit
+Capybara.javascript_driver = :webkit
+Capybara.default_wait_time = 15
+require 'rack/utils'
+Capybara.app = Rack::ShowExceptions.new(ClimbOn::Application)
+
 RSpec.configure do |config|
   # Remove this line if you're not using ActiveRecord or ActiveRecord fixtures
   config.fixture_path = "#{::Rails.root}/spec/fixtures"
@@ -34,7 +41,10 @@ RSpec.configure do |config|
   # If you're not using ActiveRecord, or you'd prefer not to run each of your
   # examples within a transaction, remove the following line or assign false
   # instead of true.
-  config.use_transactional_fixtures = true
+  # This must be disabled for drivers which run in their own thread, such as
+  # Capybara-Webkit.
+  # http://stackoverflow.com/questions/8178120/capybara-with-js-true-causes-test-to-fail
+  config.use_transactional_fixtures = false
 
   # RSpec Rails can automatically mix in different behaviours to your tests
   # based on their file location, for example enabling you to call `get` and
@@ -50,4 +60,47 @@ RSpec.configure do |config|
   # The different available types are documented in the features, such as in
   # https://relishapp.com/rspec/rspec-rails/docs
   config.infer_spec_type_from_file_location!
+
+  # Clean up the Test Database
+  # Before the entire test suite runs, clear the test database out completely
+  config.before(:suite) do
+    DatabaseCleaner.clean_with(:truncation, pre_count: true)
+
+    begin
+      DatabaseCleaner.start
+      factories_to_lint = FactoryGirl.factories.reject do |factory|
+        %i(user documentation_user documentation_user_complete)
+        .include?(factory.name)
+      end
+      FactoryGirl.lint(factories_to_lint)
+    ensure
+      DatabaseCleaner.clean
+    end
+  end
+
+  # Sets the default database cleaning strategy to be transactions === fast
+  config.before(:each) do
+    DatabaseCleaner.strategy = :transaction
+  end
+
+  # Capybara tests run in a test server process so transactions won't work
+  config.before(:each, js: true) do
+    DatabaseCleaner.strategy = :truncation
+  end
+
+  # Standard config to run DatabaseCleaner
+  config.before(:each) do
+    DatabaseCleaner.start
+    ActionMailer::Base.deliveries = []
+  end
+
+  # Disable job queueing in test
+  config.before(:each) do
+    Delayed::Worker.delay_jobs = false
+  end
+
+  # Clean up after each execution
+  config.after(:each) do
+    DatabaseCleaner.clean
+  end
 end

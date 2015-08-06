@@ -33,6 +33,7 @@ gem 'sdoc', group: :doc
 # gem 'capistrano-rails', group: :development
 group :test do
   gem 'shoulda-matchers', '~> 2.8.0'
+  gem 'capybara'
 end
 
 group :development, :test do
@@ -42,6 +43,7 @@ group :development, :test do
   gem 'devise'
   gem 'better_errors', '~> 2.1.1'
   gem 'factory_girl_rails', '~> 4.5.0'
+  gem 'database_cleaner'
 
   # Access an IRB console on exception pages or by using <%= console %> in views
   gem 'web-console', '~> 2.2.1'
